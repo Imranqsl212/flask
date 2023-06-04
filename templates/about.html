@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Shop</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+.hero {
+    background-image: url('https://www.apple.com/v/iphone/buy/h/images/meta/og__c6pnqxxo9e6a.jpg?202207190049');
+    background-size: cover;
+    background-position: center;
+    text-align: center;
+    padding: 200px;
+    color: black;
+}
+
+.hero h2 {
+    font-size: 40px;
+    margin-bottom: 20px;
+}
+
+.hero p {
+    font-size: 20px;
+    margin-bottom: 40px;
+}
+
+.btn {
+    background-color: #f39c12;
+    color: #fff;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+}
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding: 20px;
+}
+
+.product {
+    border: 1px solid #ccc;
+    padding: 20px;
+    text-align: center;
+    border-radius:10px;
+}
+
+.product img {
+    width: 100%;
+    max-height: 200px;
+    object-fit: cover;
+    margin-bottom: 10px;
+    border-radius:18px;
+}
+footer {
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 10px;
+}
+
+footer p {
+    margin-bottom: 0;
+}
+
+
+</style>
+<body>
+<section class="hero">
+    <h2>Welcome to our Online Shop!</h2>
+    <p>Discover the best deals on your favorite products.</p>
+    <a href="{{url_for('buy')}}" class="btn">Shop Now</a>
+</section>
+
+<section class="product-grid">
+    <h2>Featured Products</h2>
+    <div class="product">
+        <img src="https://www.lifewire.com/thmb/KM2XVRCBveZzN4p3tj6PZE8S26g=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/MacBook-Air-M1-2020-Computer-2-bfe3e15cd859484382a2cf8e63ef989e.jpeg"
+             alt="Product 1">
+        <h3>MacBook</h3>
+        <p>920$</p>
+    </div>
+    <div class="product">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQSqz9ygwkw4fGn6og7v3Mr2ut5MFX7xPLgnQ&usqp=CAU"
+             alt="Product 2">
+        <h3>IMac</h3>
+        <p>1100$</p>
+    </div>
+    <div class="product">
+        <img src="https://cdn.thewirecutter.com/wp-content/media/2022/12/androidtablets-2048px-tabs8.jpg"
+             alt="Product 3">
+        <h3>Android galaxy3</h3>
+        <p>500$</p>
+    </div>
+    <div class="product">
+        <img src="https://images.hindustantimes.com/tech/img/2022/09/16/original/IMG_4704_1663335122108.jpg"
+             alt="Product 3">
+        <h3>Iphone 14 pro max</h3>
+        <p>1000$</p>
+    </div>
+    <div class="product">
+        <img src="https://www.ccarprice.com/products/thumb/GMC_Canyon_AT4X_AEV_Edition.jpg" alt="Product 3">
+        <h3>GMC Canyon AT4X AEV Edition</h3>
+        <p>54,500$</p>
+    </div>
+</section>
+
+<footer>
+    <p>&copy; 2023 Online Shop. All rights reserved.</p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

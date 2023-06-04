@@ -1,0 +1,165 @@
+@import url("https://fonts.googleapis.com/css2?family=Sansita+Swashed:wght@600&display=swap");
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 140vh;
+  width:100%;
+  background: linear-gradient(45deg, greenyellow, dodgerblue);
+  font-family: "Sansita Swashed", cursive;
+}
+.center {
+  display:flex;
+  flex-direction:column;
+  padding: 50px 55px;
+  background: #fff;
+  height:105vh;
+  align-items:center;
+  justify-content:center;
+  border-radius: 10px;
+}
+form{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+}
+.center h1 {
+  font-size: 2em;
+  border-left: 5px solid dodgerblue;
+  padding: 10px;
+  color: #000;
+  letter-spacing: 5px;
+  margin-bottom: 60px;
+  font-weight: bold;
+  padding-left: 10px;
+  text-align:center;
+}
+.center .inputbox {
+  position: relative;
+  width: 330px;
+  height: 50px;
+  margin-bottom: 50px;
+}
+.center .inputbox input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  border: 2px solid #000;
+  outline: none;
+  background: none;
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 1.2em;
+}
+.center .inputbox:last-child {
+  margin-bottom: 0;
+}
+.center .inputbox span {
+  position: absolute;
+  top: 14px;
+  left: 20px;
+  font-size: 1em;
+  transition: 0.6s;
+  font-family: sans-serif;
+}
+.center .inputbox input:focus ~ span,
+.center .inputbox input:valid ~ span {
+  transform: translateX(-13px) translateY(-35px);
+  font-size: 1em;
+}
+.button {
+ --color: #00A97F;
+ padding: 0.8em 1.7em;
+ background-color: transparent;
+ border-radius: .3em;
+ position: relative;
+ overflow: hidden;
+ cursor: pointer;
+ transition: .5s;
+ font-weight: 400;
+ font-size: 17px;
+ border: 1px solid;
+ font-family: inherit;
+ text-transform: uppercase;
+ color: var(--color);
+ z-index: 1;
+ width:100%;
+ text-align:center;
+}
+
+.button::before, .button::after {
+ content: '';
+ display: block;
+ width: 50px;
+ height: 50px;
+ transform: translate(-50%, -50%);
+ position: absolute;
+ border-radius: 50%;
+ z-index: -1;
+ background-color: var(--color);
+ transition: 1s ease;
+}
+
+.button::before {
+ top: -1em;
+ left: -1em;
+}
+
+.button::after {
+ left: calc(100% + 1em);
+ top: calc(100% + 1em);
+}
+
+.button:hover::before, .button:hover::after {
+ height: 410px;
+ width: 410px;
+}
+
+.button:hover {
+ color: rgb(10, 25, 30);
+}
+
+.button:active {
+ filter: brightness(.8);
+}
+@media screen and (max-width: 320px) {
+  .center {
+    width:100%;
+    height: auto;
+  }
+  .center .inputbox {
+    margin-bottom: 30px;
+  }
+
+  .center .inputbox input {
+    font-size: 1em;
+    width:100%;
+  }
+
+  .center h1 {
+    font-size: 1.5em;
+    margin-bottom: 30px;
+  }
+
+  .button {
+    font-size: 14px;
+  }
+
+  .button::before, .button::after {
+    width: 30px;
+    height: 30px;
+  }
+
+  .button:hover::before, .button:hover::after {
+    height: 250px;
+    width: 250px;
+  }
+}
+
+

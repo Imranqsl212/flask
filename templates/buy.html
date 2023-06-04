@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home page</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='buy.css') }}">
+</head>
+<body>
+<div class="center">
+    <h1>fill out the form</h1>
+    <form method="POST">
+        <div class="inputbox">
+            <input type="text" name="name" id="name" required/>
+            <span>Name</span>
+            <br><br>
+        </div>
+        <div class="inputbox">
+            <input type="tel" name="phone" id="phone" required/>
+            <span>Phone number</span>
+            <br><br>
+        </div>
+        <div class="inputbox">
+            <input type="text" name="address" id="address" required/>
+            <span>Address</span>
+        </div>
+        <div class="inputbox">
+            <input type="email" name="maili" id="maili" required/>
+            <span>Email</span>
+            <br><br>
+        </div>
+        <div class="inputbox">
+            <input type="number" name="item_code" id="item_code" required/>
+            <span>Item ART</span>
+            <br><br>
+        </div>
+        <div class="inputbox">
+            <button type="submit" class="button">Enter</button>
+        </div>
+        <div class="inputbox">
+            <a href="{{url_for('home')}}">
+                <button class="button" type="button">← Get Back</button>
+            </a>
+        </div>
+    </form>
+    {% if message %}
+    <p style="text-align:center;">{{ message }}</p>
+    {% endif %}
+</div>
+
+</body>
+</html>
