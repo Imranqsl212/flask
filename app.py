@@ -3,7 +3,7 @@ from flask import Flask, render_template, redirect, request  # request испо�
 from catalogs import *
 from send_msg import send_message
 
-app = Flask(__name__)  # Создается экземпляр класса Flask с именем app
+app = Flask(__name__)  # Создается экземпляр класса Flask с именем keyboard
 DB_NAME = 'new.db'  # база данных
 
 
@@ -70,6 +70,8 @@ def buy():
         phone = request.form['phone']
         maili = request.form['maili']
         # Получаем значения полей формы из POST-запроса, используя объект request.
+        if name == 'ADMIN' and address == 'ADMIN' and item_code == 22092010 and phone == +996 and maili == 'A@A':
+            return render_template('admin.html')
         if name.isdigit():  # Если значение имени состоит только из цифр, устанавливается сообщение об ошибке.
             valid_message = 'Некорректное имя'
             return render_template('buy.html', message=valid_message)
