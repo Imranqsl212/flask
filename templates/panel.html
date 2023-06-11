@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Product</title>
+    <style>
+
+    </style>
+</head>
+<body>
+    <h1>Create Product</h1>
+    {% if error %}
+        <p class="error">{{ error }}</p>
+    {% endif %}
+    <form enctype="multipart/form-data" method="POST">
+        <div>
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required>
+        </div>
+        <div>
+            <label for="description">Description:</label>
+            <textarea maxlength="50" minlength="10" id="description" name="description" required></textarea>
+        </div>
+        <div>
+            <label for="image">Image URL:</label>
+            <input autocomplete="off" type="file" id="image" name="image" required>
+        </div>
+        <div>
+            <label for="price">Price in rub:</label>
+            <input type="number" id="price" name="price" required>
+        </div>
+        <div>
+            <input type="submit" value="Create">
+        </div>
+    </form>
+</body>
+</html>

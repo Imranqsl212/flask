@@ -2,6 +2,7 @@ import sqlite3
 from flask import Flask, render_template, redirect, request  # request используется для работы с запросами от клиента.
 from catalogs import *
 from send_msg import send_message
+import base64
 
 app = Flask(__name__)  # Создается экземпляр класса Flask с именем keyboard
 DB_NAME = 'new.db'  # база данных
@@ -10,7 +11,7 @@ DB_NAME = 'new.db'  # база данных
 def create_table():  # создаем таблицу бд
     with sqlite3.connect(DB_NAME) as conn:
         cursor = conn.cursor()
-        cursor.execute('''CREATE TABLE IF NOT EXISTS users 
+        cursor.execute('''CREATE TABLE IF NOT EXISTS users
                           (id INTEGER PRIMARY KEY AUTOINCREMENT,
                            name TEXT,
                            address TEXT,
@@ -19,13 +20,23 @@ def create_table():  # создаем таблицу бд
                            must_pay TEXT,
                            phone TEXT,
                            maili TEXT)''')
-        cursor.execute('''CREATE TABLE IF NOT EXISTS reviews 
+        cursor.execute('''CREATE TABLE IF NOT EXISTS reviews
                         (id INTEGER PRIMARY KEY AUTOINCREMENT,
                         name TEXT,
                         email TEXT,
                         rate INTEGER,
-                        comment TEXT, 
+                        comment TEXT,
                         img TEXT)''')
+        cursor.execute('''
+                    CREATE TABLE IF NOT EXISTS products (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        name TEXT NOT NULL,
+                        description TEXT NOT NULL,
+                        image TEXT,
+                        price TEXT
+                    )
+                ''')
+        conn.commit()
 
 
 def check_code_exists(
@@ -41,6 +52,10 @@ def check_code_exists(
             return True  # Здесь проверяется наличие кода товара в каталогах catalog_phone, catalog_tablet,
             # catalog_car, catalog_clock, catalog_pc и catalog_notebook. Если код товара найден в любом из каталогов,
             # возвращается значение True.
+        cursor.execute('SELECT item_code from products WHERE item_code = ?', (item_code,))
+        res1 = cursor.fetchall()
+        if res1 is not None:
+            return True
         else:
             return False  # если никакое условие не сработало , вернется False
 
@@ -70,8 +85,6 @@ def buy():
         phone = request.form['phone']
         maili = request.form['maili']
         # Получаем значения полей формы из POST-запроса, используя объект request.
-        if name == 'ADMIN' and address == 'ADMIN' and item_code == 22092010 and phone == +996 and maili == 'A@A':
-            return render_template('admin.html')
         if name.isdigit():  # Если значение имени состоит только из цифр, устанавливается сообщение об ошибке.
             valid_message = 'Некорректное имя'
             return render_template('buy.html', message=valid_message)
@@ -154,6 +167,80 @@ def about():
     return render_template('about.html')
 
 
+@app.route('/admin', methods=['GET', 'POST'])
+def admin():
+    if request.method == 'POST':
+        name = request.form['name']
+        password = request.form['pass']
+        if name == 'ADMIN' and password == 'TEST123':
+            return redirect('/admin/panel')
+    return render_template('admin.html')
+
+
+@app.route('/admin/panel', methods=['GET', 'POST'])
+def panel():
+    if request.method == 'POST':
+        name = request.form['name']
+        description = request.form['description']
+        image = request.files['image']
+        price = request.form['price']
+        with sqlite3.connect(DB_NAME) as conn:
+            cursor = conn.cursor()
+            image = base64.b64encode(image.read()).decode('utf-8')
+            cursor.execute('''
+                    INSERT INTO products (name, description, image, price)
+                    VALUES (?, ?, ?, ?)
+                ''', (name, description, image, price))
+            error = 'Товар успешно создан'
+            return render_template('panel.html', error=error)
+
+    return render_template('panel.html')
+
+
+@app.route('/more')
+def more():
+    with sqlite3.connect(DB_NAME) as conn:
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM products')
+        products = cursor.fetchall()
+    return render_template('more.html', products=products)
+
+
+@app.route('/product/<int:product_id>', methods=['POST', 'GET'])
+def product_details(product_id):
+    with sqlite3.connect(DB_NAME) as conn:
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM products WHERE id = ?', (product_id,))
+        products = cursor.fetchall()
+    if request.method == 'POST':
+        name = request.form['name']
+        phone = request.form['phone']
+        email = request.form['email']
+        must_pay = request.form['must_pay']
+        item = request.form['item']
+        address = request.form['address']
+        if name.isdigit():  # Если значение имени состоит только из цифр, устанавливается сообщение об ошибке.
+            valid_message = 'Некорректное имя'
+            return valid_message
+        if not is_valid_phone(
+                phone):  # Если номер телефона не является корректным, устанавливается сообщение об ошыбке.
+            message1 = "Пожалуйста, введите номер телефона со знаком «+», за которым следуют 12 цифр."
+            return message1
+        if address.isdigit():  # Если значение адреса состоит только из цифр, устанавливается сообщение об ошибке.
+            valid1_message = 'Некорректный адрес'
+            return valid1_message
+        else:
+            with sqlite3.connect(DB_NAME) as conn:
+                cursor = conn.cursor()
+                cursor.execute('''
+                INSERT INTO users (name, address, item, item_code, must_pay, phone, maili) VALUES (?,?,?,?,?,?,?)
+                ''', (name, address, item, 0, must_pay, phone, email))
+                send = f'Здравстуйте {name}, вы заказали у нас {item}, ваша итоговая плата равняется {must_pay} рублей ,отправьте деньги на мбанк . Наш номер: +996550578150'
+                send_message(phone, send)
+
+    return render_template('product_details.html', products=products)
+
+
 if __name__ == '__main__':
     create_table()  # Вызывается функция create_table() для создания таблицы в базе данных.
-    app.run(debug=True, port=8080, host='0.0.0.0')  # Запускается веб-приложение Flask
+    app.run(debug=True, port=500, host='0.0.0.0')  # Запускается веб-приложение Flask
