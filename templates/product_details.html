@@ -155,12 +155,16 @@ span {
   font-weight: 500;
   text-transform: uppercase;
 }
-
+html{
+scroll-behavior:smooth;
+scroll-padding:15rem;
+}
 .section_form{
 display:flex;
 justify-content:center;
 align-items:center;
 }
+
 
 
 
@@ -181,13 +185,17 @@ align-items:center;
             <p><span>{{product[4]}}</span>RUB</p>
             <br>
             <br>
-            <button type="button">buy now</button>
+            <a href="#forma">
+                <button type="button">buy now</button>
+            </a>
         </div>
     </div>
 </div>
 
+<br>
+<br><br><br>
 
-<section class="section_form">
+<section id="forma" class="section_form">
     <form method="POST" id="consultation-form" class="feed-form" action="#">
         <input required="" name="name" id="name" placeholder="Name" type="text">
         <input name="item" id="item" readonly value="{{product[1]}}">
@@ -196,6 +204,8 @@ align-items:center;
         <input name="phone" id="phone" required="" placeholder="Phone number">
         <input name="email" id="email" required="" placeholder="E-mail" type="email">
         <button class="button_submit">ORDER</button>
+        <br>
+        <a href="{{ url_for('home') }}"><button class="button_submit">BACK</button></a>
     </form>
 </section>
 
