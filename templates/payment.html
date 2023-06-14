@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pay</title>
+</head>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@500&family=Montserrat:wght@600&display=swap');
+
+/* CSS Reset */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #404040;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+}
+
+.login-box {
+  width: 25em;
+  height: 35em;
+  padding: 20px;
+  background-color: #797979;
+  border-radius: 1em;
+  box-shadow: 0 0 5px #726f77;
+  color: #ffffff;
+}
+
+h2 {
+  font-family: 'Montserrat', sans-serif;
+  text-align: center;
+  margin-bottom: 45px;
+  font-size: 200%;
+  text-shadow: 0 0 5px #cacaca;
+}
+
+p {
+  margin-top: 18px;
+  font-family: 'Montserrat', sans-serif;
+  text-align: center;
+  margin-bottom: 45px;
+  font-size: 70%;
+  text-shadow: 0 0 5px #cacaca;
+}
+
+.form-group {
+  margin-bottom: 10px;
+  margin-top: 0px;
+}
+
+label {
+  display: block;
+  font-weight: bold;
+}
+
+input{
+  width: 100%;
+  padding: 15px;
+  border-radius: 1em;
+  border: 2px solid #535353;
+}
+
+button {
+  display: block;
+  width: 100%;
+  min-height: 50px;
+  margin-top: 40px;
+  background-color: #5d5d5d;
+  color: #fff;
+  font-family: 'Montserrat', sans-serif;
+  border: none;
+  border-radius: 1em;
+  cursor: pointer;
+  box-shadow: 0 0 5px #fff;
+}
+
+button:hover {
+  color: rgb(223, 223, 223);
+  box-shadow: 0 0 5px #fff;
+  animation: glowing 7s infinite;
+}
+
+@keyframes glowing {
+  0% {
+    box-shadow: 0 0 5px #fff;
+  }
+  25% {
+    box-shadow: 0 0 5px #276e88;
+  }
+  50% {
+    box-shadow: 0 0 20px #399062;
+  }
+  65% {
+    box-shadow: 0 0 5px #8070bb;
+  }
+  95% {
+    box-shadow: 0 0 5px #bfbfc1;
+  }
+  100% {
+    box-shadow: 0 0 5px #ffffff;
+  }
+}
+
+
+
+
+
+</style>
+<body>
+<div class="login-container">
+    <div class="login-box">
+        <h2>PAY</h2>
+        {% if error %}
+        <div class="error-message">{{ error }}</div>
+        {% endif %}
+        {% if success %}
+        <div class="success-message">{{ success }}</div>
+        {% endif %}
+        <form method="POST">
+            <div class="form-group">
+                <label for="username">Имя на кого формлен товар:</label>
+                <input type="text" id="username" name="username" placeholder="Name" oninput="updateMustPay()">
+            </div>
+            <div class="form-group">
+                <input type="text" id="pay" name="pay" readonly placeholder="MONEY IN RUB">
+            </div>
+            <div class="form-group">
+                <input type="password" id="card" name="card" placeholder="CARD NUMBER">
+            </div>
+            <div class="form-group">
+                <input type="password" maxlength="3" minlength="3" id="cvv" name="cvv" placeholder="CVV">
+            </div>
+            <div class="form-group">
+                <input type="password" id="pass" name="pass" placeholder="PASSWORD">
+            </div>
+            <button type="submit">Submit</button>
+            <div class="register"></div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function updateMustPay() {
+        var username = document.getElementById("username").value;
+        // Отправляем запрос на сервер, чтобы получить сумму, которую нужно заплатить
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "/get_must_pay?username=" + username, true);
+        xhr.onreadystatechange = function () {
+            // Проверяем, что запрос завершен и получен успешный ответ от сервера
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                var mustPay = xhr.responseText;
+
+                // Получаем сумму must_pay из ответа сервера
+                document.getElementById("pay").value = mustPay;
+            }
+        };
+        xhr.send();
+    }
+</script>
+
+
+</body>
+</html>

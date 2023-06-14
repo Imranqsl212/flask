@@ -2,6 +2,11 @@ import os
 from twilio.rest import Client
 
 
+my_email = os.getenv('EMAIL')
+password = os.getenv('PASS')
+
+
+
 def send_message(phone_number, message):
     account_sid = os.getenv('YOUR_TWILIO_ACCOUNT_SID')
     auth_token = os.getenv('YOUR_TWILIO_AUTH_TOKEN')
@@ -14,7 +19,4 @@ def send_message(phone_number, message):
         from_=twilio_number,
         to=phone_number
     )
-
-
-
 
