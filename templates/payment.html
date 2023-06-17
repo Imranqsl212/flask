@@ -122,6 +122,8 @@ button:hover {
 
 
 
+
+
 </style>
 <body>
 <div class="login-container">
@@ -136,19 +138,19 @@ button:hover {
         <form method="POST">
             <div class="form-group">
                 <label for="username">Имя на кого формлен товар:</label>
-                <input type="text" id="username" name="username" placeholder="Name" oninput="updateMustPay()">
+                <input required type="text" id="username" name="username" placeholder="Name" oninput="updateMustPay()">
             </div>
             <div class="form-group">
                 <input type="text" id="pay" name="pay" readonly placeholder="MONEY IN RUB">
             </div>
             <div class="form-group">
-                <input type="password" id="card" name="card" placeholder="CARD NUMBER">
+                <input required type="password" id="card" name="card" placeholder="CARD NUMBER">
             </div>
             <div class="form-group">
-                <input type="password" maxlength="3" minlength="3" id="cvv" name="cvv" placeholder="CVV">
+                <input required type="password" maxlength="3" minlength="3" id="cvv" name="cvv" placeholder="CVV">
             </div>
             <div class="form-group">
-                <input type="password" id="pass" name="pass" placeholder="PASSWORD">
+                <input required type="password" id="pass" name="pass" placeholder="PASSWORD">
             </div>
             <button type="submit">Submit</button>
             <div class="register"></div>
@@ -157,22 +159,31 @@ button:hover {
 </div>
 
 <script>
-    function updateMustPay() {
-        var username = document.getElementById("username").value;
-        // Отправляем запрос на сервер, чтобы получить сумму, которую нужно заплатить
-        var xhr = new XMLHttpRequest();
-        xhr.open("GET", "/get_must_pay?username=" + username, true);
-        xhr.onreadystatechange = function () {
-            // Проверяем, что запрос завершен и получен успешный ответ от сервера
-            if (xhr.readyState === 4 && xhr.status === 200) {
-                var mustPay = xhr.responseText;
+function updateMustPay() {
+    var username = document.getElementById("username").value;
+    // Отправляем запрос на сервер, чтобы получить сумму, которую нужно заплатить
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "/get_must_pay?username=" + username, true);
+    xhr.onreadystatechange = function () {
+        // Проверяем, что запрос завершен и получен успешный ответ от сервера
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            var mustPay = xhr.responseText;
 
-                // Получаем сумму must_pay из ответа сервера
-                document.getElementById("pay").value = mustPay;
+            // Получаем сумму must_pay из ответа сервера
+            document.getElementById("pay").value = mustPay;
+
+            // Disable/enable the button based on the value of "pay"
+            if (mustPay == 0) {
+                document.querySelector('.eee').disabled = true;
+            } else {
+                document.querySelector('.eee').disabled = false;
             }
-        };
-        xhr.send();
-    }
+        }
+    };
+    xhr.send();
+}
+
+
 </script>
 
 

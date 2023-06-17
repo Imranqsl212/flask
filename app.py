@@ -120,17 +120,17 @@ def buy():
 
                 for item in items:
                     message = f'Успешно!!!, вы заказали {item[0]}, Описание: {item[1]}, цена: {item[2]} рублей. Наши менеджера скоро свяжутся с вами'
-                    cursor.execute('UPDATE users SET item = ?, must_pay = ?',
-                                   (item[0], item[2]))
+                    cursor.execute('UPDATE users SET item = ?, must_pay = ?  WHERE name=?',
+                                   (item[0], item[2], name))
                     send = f'Здравстуйте {name}, вы заказали у нас {item[0]}, ваша итоговая плата равняется {item[2]} рублей ,отправьте деньги на мбанк .Оплатите на сайте в разделе "PAYMENTS"'
                     send_message(phone, send)
 
                 for item in catalog_phone + catalog_tablet + catalog_car + catalog_clock + catalog_pc + catalog_notebook:
                     if int(item_code) == item['art']:
-                        message = f"Успешно!!!, вы заказали {item['name1']}, Описание: {item['desc']}, цена: {item['price']}. Наши менеджера скоро свяжутся с вами"
-                        cursor.execute('UPDATE users SET item = ?, must_pay = ?',
-                                       (item['name1'], item['price']))
-                        send = f'Здравстуйте {name}, вы заказали у нас {item["name1"]}, ваша итоговая плата равняется {item["price"]} ,отправьте деньги на мбанк . Оплатите на сайте в разделе "PAYMENTS"'
+                        message = f"Успешно!!!, вы заказали {item['name1']}, Описание: {item['desc']}, цена: {item['price']}RUB. Наши менеджера скоро свяжутся с вами"
+                        cursor.execute('UPDATE users SET item = ?, must_pay = ? WHERE name=?',
+                                       (item['name1'], item['price'], name))
+                        send = f'Здравстуйте {name}, вы заказали у нас {item["name1"]}, ваша итоговая плата равняется {item["price"]} RUB,отправьте деньги на мбанк . Оплатите на сайте в разделе "PAYMENTS"'
                         send_message(phone, send)
 
 
@@ -276,7 +276,7 @@ def payment():
             cursor.execute("UPDATE users SET must_pay = NULL WHERE name = ?", (username,))
             conn.commit()
 
-        success_message = f'Payment of {pay} RUB successfully processed.We will send you your item soonly'
+        success_message = f'Payment of {pay} RUB successfully processed.'
         return render_template('payment.html', success=success_message)
 
     return render_template('payment.html')

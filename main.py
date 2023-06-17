@@ -29,6 +29,13 @@ async def db_start():
     db.commit()
 
 
+async def update_item(state):
+    async with state.proxy() as data:
+        cur.execute("UPDATE items SET name1 = ?, desc = ?, price = ?, photo1 = ? WHERE art = ? ",
+                    (data['name1'], data['desc'], data['price'], data['photo1'],data['art']))
+        db.commit()
+
+
 async def add_item(state):
     async with state.proxy() as data:
         cur.execute("INSERT INTO items (name1, desc, price, photo1, brand, art) VALUES (?, ?, ?, ?, ?,?)",
@@ -47,6 +54,18 @@ class NewOrder(StatesGroup):
     desc = State()
     price = State()
     art = State()
+    photo1 = State()
+
+
+class ItemDeletion(StatesGroup):
+    confirm = State()
+
+
+class changeItem(StatesGroup):
+    art = State()
+    name1 = State()
+    price = State()
+    desc = State()
     photo1 = State()
 
 
@@ -93,6 +112,69 @@ async def con(message: types.Message):
         print('я тебя не понимаю')
 
 
+@dp.message_handler(text='change item')
+async def con002(message: types.Message):
+    if message.from_user.id == int(os.getenv('ADMIN_ID')):
+        await changeItem.art.set()
+        await message.answer(f'код товара чтоб его изменить')
+    else:
+        print('я тебя не понимаю')
+
+
+@dp.message_handler(state=changeItem.art)
+async def con11231(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        data['art'] = message.text.strip()
+        art1 = message.text.strip()
+        if len(art1) == 6 and art1.isdigit():
+            with db:
+                cur.execute("SELECT * FROM items WHERE art = ?", (art1,))
+                existing_art = cur.fetchall()
+                if existing_art:
+                    await message.answer('напишите название товара')
+                    await changeItem.next()
+        else:
+            await message.answer('error')
+
+
+@dp.message_handler(state=changeItem.name1)
+async def handle_name(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        data['name1'] = message.text
+    await message.answer('новая цена товара')
+    await changeItem.next()
+
+
+@dp.message_handler(state=changeItem.price)
+async def handle_name(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        data['price'] = message.text
+    await message.answer('новое описание товара')
+    await changeItem.next()
+
+
+@dp.message_handler(state=changeItem.desc)
+async def handle_name(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        data['desc'] = message.text
+    await message.answer('новое фото товара')
+    await changeItem.next()
+
+
+@dp.message_handler(lambda message: not message.photo, state=NewOrder.photo1)
+async def add_item_photo_check(message: types.Message):
+    await message.answer('Это не фотография!')
+
+
+@dp.message_handler(content_types=['photo'], state=changeItem.photo1)
+async def add_item_photo(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        data['photo1'] = message.photo[0].file_id
+    await update_item(state)
+    await message.answer('Товар успешно создан!', reply_markup=kb.panel)
+    await state.finish()
+
+
 @dp.message_handler(text='отзывы')
 async def con1(message: types.Message):
     cur.execute("SELECT * FROM reviews")
@@ -120,6 +202,32 @@ async def add_item1(message: types.Message):
         await message.answer('Выберите тип товара', reply_markup=kb.list)
     else:
         await message.reply('Я тебя не понимаю.')
+
+
+@dp.message_handler(text='delete item')
+async def add_item1(message: types.Message):
+    if message.from_user.id == int(os.getenv('ADMIN_ID')):
+        await ItemDeletion.confirm.set()
+        await message.answer('наришите код товара чтоб его удалить')
+    else:
+        await message.reply('Я тебя не понимаю.')
+
+
+@dp.message_handler(state=ItemDeletion.confirm)
+async def dele(message: types.Message, state: FSMContext):
+    async with state.proxy():
+        art = message.text.strip()
+        if len(art) == 6 and art.isdigit():
+            with db:
+                cur.execute("SELECT * FROM items WHERE art = ?", (art,))
+                existing_art = cur.fetchall()
+                if existing_art:
+                    cur.execute('DELETE FROM items WHERE art = ? ', (art,))
+                    await message.answer('успешно удален')
+                    await state.finish()
+        else:
+            await message.answer('error')
+            await state.finish()
 
 
 @dp.callback_query_handler(state=NewOrder.type)
@@ -194,60 +302,60 @@ async def add_item_photo(message: types.Message, state: FSMContext):
 async def show_catal(callback_query: types.CallbackQuery):
     if callback_query.data == 'Phone_sh':
         for phone in catalog_phone:
-            result1 = f'<b>Name</b>: {phone["name1"]}\n<b>Description</b>: {phone["desc"]}\n<b>Price</b>: {phone["price"]}\n<b>ART</b>:{phone["art"]}'
+            result1 = f'<b>Name</b>: {phone["name1"]}\n<b>Description</b>: {phone["desc"]}\n<b>Price</b>: {phone["price"]}RUB\n<b>ART</b>:{phone["art"]}'
             await bot.send_photo(callback_query.message.chat.id, phone["photo1"], caption=result1, parse_mode="html")
         cur.execute("SELECT * FROM items WHERE brand=?", ('Phone',))
         items = cur.fetchall()
         for item in items:
-            result1 = f'<b>Name</b>: {item[0]}\n<b>Description</b>: {item[1]}\n<b>Price</b>: {item[2]}\n<b>ART</b>:{item[5]}'
+            result1 = f'<b>Name</b>: {item[0]}\n<b>Description</b>: {item[1]}\n<b>Price</b>: {item[2]}RUB\n<b>ART</b>:{item[5]}'
             await bot.send_photo(callback_query.message.chat.id, item[3], caption=result1, parse_mode="html")
 
     elif callback_query.data == 'Notebook_sh':
         for notebook in catalog_notebook:
-            result1 = f'<b>Name</b>: {notebook["name1"]}\n<b>Description</b>: {notebook["desc"]}\n<b>Price</b>: {notebook["price"]}\n<b>ART</b>:{notebook["art"]}'
+            result1 = f'<b>Name</b>: {notebook["name1"]}\n<b>Description</b>: {notebook["desc"]}\n<b>Price</b>: {notebook["price"]}RUB\n<b>ART</b>:{notebook["art"]}'
             await bot.send_photo(callback_query.message.chat.id, notebook["photo1"], caption=result1, parse_mode="html")
         cur.execute("SELECT * FROM items WHERE brand=?", ('Notebook',))
         items = cur.fetchall()
         for item in items:
-            result1 = f'<b>Name</b>: {item[0]}\n<b>Description</b>: {item[1]}\n<b>Price</b>: {item[2]}\n<b>ART</b>:{item[5]}'
+            result1 = f'<b>Name</b>: {item[0]}\n<b>Description</b>: {item[1]}\n<b>Price</b>: {item[2]}RUB\n<b>ART</b>:{item[5]}'
             await bot.send_photo(callback_query.message.chat.id, item[3], caption=result1, parse_mode="html")
 
     elif callback_query.data == 'PC_sh':
         for pc in catalog_pc:
-            result1 = f'<b>Name</b>: {pc["name1"]}\n<b>Description</b>: {pc["desc"]}\n<b>Price</b>: {pc["price"]}\n<b>ART</b>:{pc["art"]}'
+            result1 = f'<b>Name</b>: {pc["name1"]}\n<b>Description</b>: {pc["desc"]}\n<b>Price</b>: {pc["price"]}RUB\n<b>ART</b>:{pc["art"]}'
             await bot.send_photo(callback_query.message.chat.id, pc["photo1"], caption=result1, parse_mode="html")
         cur.execute("SELECT * FROM items WHERE brand=?", ('PC',))
         items = cur.fetchall()
         for item in items:
-            result1 = f'<b>Name</b>: {item[0]}\n<b>Description</b>: {item[1]}\n<b>Price</b>: {item[2]}\n<b>ART</b>:{item[5]}'
+            result1 = f'<b>Name</b>: {item[0]}\n<b>Description</b>: {item[1]}\n<b>Price</b>: {item[2]}RUB\n<b>ART</b>:{item[5]}'
             await bot.send_photo(callback_query.message.chat.id, item[3], caption=result1, parse_mode="html")
 
     elif callback_query.data == 'Clock_sh':
         for phone in catalog_clock:
-            result1 = f'<b>Name</b>: {phone["name1"]}\n<b>Description</b>: {phone["desc"]}\n<b>Price</b>: {phone["price"]}\n<b>ART</b>:{phone["art"]}'
+            result1 = f'<b>Name</b>: {phone["name1"]}\n<b>Description</b>: {phone["desc"]}\n<b>Price</b>: {phone["price"]}RUB\n<b>ART</b>:{phone["art"]}'
             await bot.send_photo(callback_query.message.chat.id, phone["photo1"], caption=result1, parse_mode="html")
         cur.execute("SELECT * FROM items WHERE brand=?", ('Clock',))
         items = cur.fetchall()
         for item in items:
-            result1 = f'<b>Name</b>: {item[0]}\n<b>Description</b>: {item[1]}\n<b>Price</b>: {item[2]}\n<b>ART</b>:{item[5]}'
+            result1 = f'<b>Name</b>: {item[0]}\n<b>Description</b>: {item[1]}\n<b>Price</b>: {item[2]}RUB\n<b>ART</b>:{item[5]}'
             await bot.send_photo(callback_query.message.chat.id, item[3], caption=result1, parse_mode="html")
     elif callback_query.data == 'Tablet_sh':
         for phone in catalog_tablet:
-            result1 = f'<b>Name</b>: {phone["name1"]}\n<b>Description</b>: {phone["desc"]}\n<b>Price</b>: {phone["price"]}\n<b>ART</b>:{phone["art"]}'
+            result1 = f'<b>Name</b>: {phone["name1"]}\n<b>Description</b>: {phone["desc"]}\n<b>Price</b>: {phone["price"]}RUB\n<b>ART</b>:{phone["art"]}'
             await bot.send_photo(callback_query.message.chat.id, phone["photo1"], caption=result1, parse_mode="html")
         cur.execute("SELECT * FROM items WHERE brand=?", ('Tablet',))
         items = cur.fetchall()
         for item in items:
-            result1 = f'<b>Name</b>: {item[0]}\n<b>Description</b>: {item[1]}\n<b>Price</b>: {item[2]}\n<b>ART</b>:{item[5]}'
+            result1 = f'<b>Name</b>: {item[0]}\n<b>Description</b>: {item[1]}\n<b>Price</b>: {item[2]}RUB\n<b>ART</b>:{item[5]}'
             await bot.send_photo(callback_query.message.chat.id, item[3], caption=result1, parse_mode="html")
     elif callback_query.data == 'Cars_sh':
         for phone in catalog_car:
-            result1 = f'<b>Name</b>: {phone["name1"]}\n<b>Description</b>: {phone["desc"]}\n<b>Price</b>: {phone["price"]}\n<b>ART</b>:{phone["art"]}'
+            result1 = f'<b>Name</b>: {phone["name1"]}\n<b>Description</b>: {phone["desc"]}\n<b>Price</b>: {phone["price"]}RUB\n<b>ART</b>:{phone["art"]}'
             await bot.send_photo(callback_query.message.chat.id, phone["photo1"], caption=result1, parse_mode="html")
         cur.execute("SELECT * FROM items WHERE brand=?", ('Cars',))
         items = cur.fetchall()
         for item in items:
-            result1 = f'<b>Name</b>: {item[0]}\n<b>Description</b>: {item[1]}\n<b>Price</b>: {item[2]}\n<b>ART</b>:{item[5]}'
+            result1 = f'<b>Name</b>: {item[0]}\n<b>Description</b>: {item[1]}\n<b>Price</b>: {item[2]}RUB\n<b>ART</b>:{item[5]}'
             await bot.send_photo(callback_query.message.chat.id, item[3], caption=result1, parse_mode="html")
     else:
         await callback_query.answer('i dont understand you')
