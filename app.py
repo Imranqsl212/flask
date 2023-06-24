@@ -1,13 +1,13 @@
+import os
 import sqlite3
 from flask import Flask, render_template, redirect, request, \
     flash  # request используется для работы с запросами от клиента.
 from catalogs import *
 from send_msg import send_message
 import base64
-
 app = Flask(__name__)  # Создается экземпляр класса Flask с именем keyboard
 DB_NAME = 'new.db'  # база данных
-app.secret_key = ['dfiufsdjkafsioh']
+
 
 
 def create_table():  # создаем таблицу бд
@@ -177,6 +177,67 @@ def review():
 @app.route('/about', methods=['GET', 'POST'])
 def about():
     return render_template('about.html')
+
+
+
+
+
+@app.route('/change', methods=['GET', 'POST'])
+def change():
+    with sqlite3.connect(DB_NAME) as conn:
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM products')
+        products = cursor.fetchall()
+    return render_template('change.html', products=products)
+
+
+@app.route('/delete', methods=['GET', 'POST'])
+def delete():
+    with sqlite3.connect(DB_NAME) as conn:
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM products')
+        products = cursor.fetchall()
+    return render_template('delete.html', products=products)
+
+
+@app.route('/delete/<int:delete1>', methods=['POST', 'GET'])
+def delete_details(delete1):
+    if request.method == 'POST':
+        with sqlite3.connect(DB_NAME) as conn:
+            cursor = conn.cursor()
+            cursor.execute('SELECT name FROM products WHERE id=?', (delete1,))
+            name1 = cursor.fetchone()  # Use fetchone() to get a single value instead of fetchall()
+            if name1:
+                name1 = name1[0]  # Extract the value from the tuple
+                cursor.execute('DELETE FROM products WHERE id=?', (delete1,))
+                cursor.execute('DELETE FROM users WHERE item = ?', (name1,))
+                conn.commit()
+
+    with sqlite3.connect(DB_NAME) as conn:
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM products WHERE id = ?', (delete1,))
+        products = cursor.fetchall()
+    return render_template('delete_details.html', products=products)
+
+
+@app.route('/change/<int:change1>', methods=['POST', 'GET'])
+def change_details(change1):
+    if request.method == 'POST':
+        item = request.form['item']
+        must_pay = request.form['must_pay']
+        image = request.files['file']
+        desc = request.form['desc']
+        with sqlite3.connect(DB_NAME) as conn:
+            cursor = conn.cursor()
+            image = base64.b64encode(image.read()).decode('utf-8')
+            cursor.execute('UPDATE products SET name=?, price=?, image=?, description=? WHERE id=?',
+                           (item, must_pay, image, desc, change1))
+            conn.commit()
+    with sqlite3.connect(DB_NAME) as conn:
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM products WHERE id = ?', (change1,))
+        products = cursor.fetchall()
+    return render_template('change_details.html', products=products)
 
 
 @app.route('/admin', methods=['GET', 'POST'])

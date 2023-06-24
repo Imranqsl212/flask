@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>chat</title>
+    <style>
+        #chat-container {
+    width: 400px;
+    height: 500px;
+    border: 1px solid #ccc;
+    overflow-y: scroll;
+}
+
+#chat-log {
+    padding: 10px;
+}
+
+#chat-log .message {
+    margin-bottom: 10px;
+    background-color: #f1f1f1;
+    border-radius: 4px;
+    padding: 10px;
+}
+
+#chat-form {
+    padding: 10px;
+    display: flex;
+}
+
+#chat-form input[type="text"] {
+    flex-grow: 1;
+    margin-right: 10px;
+}
+
+    </style>
+</head>
+<body>
+<div id="chat-container">
+    <div id="chat-log">
+        {% for message in chat_log %}
+        <div class="message {{ message.role }}">{{ message.content }}</div>
+        {% endfor %}
+    </div>
+    <form id="chat-form" method="POST" action="/chat">
+        <input type="text" name="user_message" placeholder="Type your message...">
+        <button type="submit">Send</button>
+    </form>
+</div>
+</body>
+</html>

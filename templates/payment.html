@@ -172,7 +172,6 @@ function updateMustPay() {
             // Получаем сумму must_pay из ответа сервера
             document.getElementById("pay").value = mustPay;
 
-            // Disable/enable the button based on the value of "pay"
             if (mustPay == 0) {
                 document.querySelector('.eee').disabled = true;
             } else {

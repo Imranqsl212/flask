@@ -1,10 +1,207 @@
-<!DOCTYPE html>
+{% for product in products %}
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <title>Delete_details</title>
+    <link href="https://fonts.googleapis.com/css?family=Bentham|Playfair+Display|Raleway:400,500|Suranna|Trocchi"
+          rel="stylesheet">
+    <style>
+      body {
+  background-color: #fdf1ec;
+}
+
+.wrapper {
+   height: 500px;
+  width: 90%;
+  margin: 50px auto;
+  border-radius: 7px 7px 7px 7px;
+  -webkit-box-shadow: 0px 14px 32px 0px rgba(0, 0, 0, 0.15);
+  -moz-box-shadow: 0px 14px 32px 0px rgba(0, 0, 0, 0.15);
+  box-shadow: 0px 14px 32px 0px rgba(0, 0, 0, 0.15);
+}
+
+.product-img {
+  float: left;
+   height: 500px;
+  width: 45%;
+}
+
+.product-img img {
+  border-radius: 7px 0 0 7px;
+  width:100%;
+  height: 500px;
+}
+
+.product-info {
+  float: left;
+   height: 500px;
+  width: 55%;
+  border-radius: 0 7px 10px 7px;
+  background-color: #ffffff;
+}
+
+.product-text {
+  text-align:center;
+}
+
+.product-text h1 {
+  margin: 0 0 0 38px;
+  padding-top: 52px;
+  font-size: 34px;
+  color: #474747;
+}
+
+.product-text h1,
+.product-price-btn p {
+  font-family: 'Bentham', serif;
+}
+
+.product-text h2 {
+  margin: 0 0 47px 38px;
+  font-size: 13px;
+  font-family: 'Raleway', sans-serif;
+  font-weight: 400;
+  text-transform: uppercase;
+  color: #d2d2d2;
+  letter-spacing: 0.2em;
+}
+
+.product-text p {
+  height: 125px;
+  margin: 0 0 0 38px;
+  font-family: 'Playfair Display', serif;
+  color: #8d8d8d;
+  line-height: 1.7em;
+  font-size: 15px;
+  font-weight: lighter;
+  overflow: hidden;
+}
+
+.product-price-btn {
+  height: 103px;
+  width: 100%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  column-gap:40px;
+  text-align:center;
+}
+
+.product-price-btn p {
+  font-family: 'Trocchi', serif;
+  font-size: 28px;
+  font-weight: lighter;
+  color: #474747;
+}
+
+span {
+  font-family: 'Suranna', serif;
+  font-size: 34px;
+}
+
+.product-price-btn button {
+  height: 50px;
+  width: 176px;
+  box-sizing: border-box;
+  border: transparent;
+  border-radius: 60px;
+  font-family: 'Raleway', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: #ffffff;
+  background-color: #9cebd5;
+  cursor: pointer;
+  outline: none;
+}
+
+.product-price-btn button:hover {
+  background-color: #79b0a1;
+}
+
+.feed-form {
+  margin-top: 36px;
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+}
+
+.feed-form input {
+  height: 54px;
+  border-radius: 5px;
+  background: white;
+  margin-bottom: 15px;
+  border: none;
+  padding: 0 20px;
+  font-weight: 300;
+  font-size: 14px;
+  color: #4B4B4B;
+}
+
+.button_submit:hover, .feed-form input:hover {
+  transform: scale(1.009);
+  box-shadow: 0px 0px 3px 0px #212529;
+}
+
+.button_submit {
+  width: 100%;
+  height: 54px;
+  font-size: 14px;
+  color: white;
+  background: red;
+  border-radius: 5px;
+  border: none;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+html{
+scroll-behavior:smooth;
+scroll-padding:15rem;
+}
+.section_form{
+display:flex;
+justify-content:center;
+align-items:center;
+}
+
+
+
+
+    </style>
 </head>
+
 <body>
-$END$
+<div class="wrapper">
+    <div class="product-img">
+        <img src="data:image/jpeg;base64,{{ product[3] }}" height="420" width="327">
+    </div>
+    <div class="product-info">
+        <div class="product-text">
+            <h1>{{product[1]}}</h1>
+            <p>{{product[2]}}</p>
+        </div>
+        <div class="product-price-btn">
+            <p><span>{{product[4]}}</span>RUB</p>
+            <br>
+            <br>
+            <a href="#forma">
+                <button type="button">buy now</button>
+            </a>
+        </div>
+    </div>
+</div>
+
+<br>
+<br><br><br>
+
+<section id="forma" class="section_form">
+    <form enctype="multipart/form-data" method="POST" id="consultation-form" class="feed-form" action="#">
+        <button class="button_submit">DELETE</button>
+    </form>
+</section>
+
+{% endfor %}
 </body>
+
 </html>
