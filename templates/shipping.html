@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Shipping items</title>
+</head>
+<style>
+    @import url('https://fonts.googleapis.com/css?family=Ubuntu');
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    display: flex;
+    align-items: center;
+    min-height: 100vh;
+    justify-content: center;
+    font-family: 'Ubuntu', sans-serif;
+}
+
+h1 {
+    font-size: 1.2rem;
+    text-transform: capitalize;
+}
+
+.card {
+    position: relative;
+    border-radius: 5px;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.3);
+    height: 500px;
+    overflow: hidden;
+    width: 400px;
+}
+
+.card > figure {
+    width: 90%;
+    margin: 20px auto 0 auto;
+}
+
+.card > figure > img {
+    width: 100%;
+}
+
+.details {
+    background-color: #FFF;
+    border-radius: 10px;
+    padding: 20px;
+    position: absolute;
+    top: 85%;
+    width: 100%;
+    transition: box-shadow .3s ease-in-out,
+                top .3s ease-in-out;
+}
+
+.card:hover .details {
+    box-shadow: 0 -5px 10px rgba(0,0,0,0.3);
+    top: 40%;
+}
+
+.details > .min-details,
+.details > .options,
+.details > .options > .options-size,
+.details > .options > .options-colors {
+    margin-bottom: 20px;
+}
+
+.details > .min-details {
+    display: flex;
+    justify-content: space-between;
+}
+
+.details > .min-details > h1 > span {
+    color: #7B7B7B;
+    display: block;
+    font-size: .9rem;
+    font-weight: 400;
+}
+
+.promotion__timer {
+  width: 100%;
+}
+.promotion__timer .title {
+  text-align: right;
+}
+.promotion__timer .timer {
+  width: 100%;
+  margin-top: 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.promotion__timer .timer__block {
+  width: 80px;
+  height: 120px;
+  background: #fff;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  font-size: 16px;
+  font-weight: 300;
+  text-align: center;
+}
+.promotion__timer .timer__block span {
+  display: block;
+  margin-top: 20px;
+  margin-bottom: 5px;
+  font-size: 56px;
+  font-weight: 700;
+}
+
+
+
+
+</style>
+<body>
+{% for product in products %}
+{% if product[5] is not none %}
+<div class="card">
+    <div class="promotion__timer">
+        <div class="title">Привезут через:</div>
+        <div class="timer">
+            {% set end_time = product[5] | datetime %}
+            {% set time_diff = end_time - current_time %}
+            <div class="timer__block">
+                <span class="days">{{ time_diff.days }}</span>
+                дней
+            </div>
+            <div class="timer__block">
+                <span class="hours">{{ (time_diff.seconds // 3600) % 24 }}</span>
+                часов
+            </div>
+            <div class="timer__block">
+                <span class="minutes">{{ (time_diff.seconds // 60) % 60 }}</span>
+                минут
+            </div>
+            <div class="timer__block">
+                <span class="seconds">{{ time_diff.seconds % 60 }}</span>
+                секунд
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endfor %}
+
+
+<script>
+
+    function updateTimers() {
+        var timerElements = document.querySelectorAll('.promotion__timer');
+
+        timerElements.forEach(function(timerElement) {
+            var endDateTime = new Date(timerElement.querySelector('.days').getAttribute('data-end'));
+            var nowDateTime = new Date();
+            var timeDiff = Math.max(endDateTime - nowDateTime, 0) / 1000; // in seconds
+
+            var days = Math.floor(timeDiff / 86400);
+            var hours = Math.floor((timeDiff % 86400) / 3600);
+            var minutes = Math.floor((timeDiff % 3600) / 60);
+            var seconds = Math.floor(timeDiff % 60);
+
+            timerElement.querySelector('.days').textContent = days;
+            timerElement.querySelector('.hours').textContent = hours;
+            timerElement.querySelector('.minutes').textContent = minutes;
+            timerElement.querySelector('.seconds').textContent = seconds;
+        });
+
+        setTimeout(updateTimers, 1000); // Update timers every second (1000 milliseconds)
+    }
+
+    window.addEventListener('load', updateTimers);
+
+
+</script>
+</body>
+</html>

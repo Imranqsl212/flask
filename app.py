@@ -1,13 +1,49 @@
 import os
 import sqlite3
+from PIL import Image, ImageDraw, ImageFont
+import requests
+from bs4 import BeautifulSoup
 from flask import Flask, render_template, redirect, request, \
     flash  # request используется для работы с запросами от клиента.
 from catalogs import *
 from send_msg import send_message
+import time
+import datetime
 import base64
+import qrcode
+
 app = Flask(__name__)  # Создается экземпляр класса Flask с именем keyboard
 DB_NAME = 'new.db'  # база данных
 
+
+# def create_image_with_text(text, output_path='image.png',font_path='Font.ttf'):
+#     width, height = 1600, 1600
+#     background_color = (255, 255, 255)
+#     image = Image.new('RGB', (width, height), background_color)
+#     font_size = 100
+#     font = ImageFont.truetype(font_path, font_size)
+#     text_color = (0, 0, 0)
+#     text_width, text_height = font.getsize(text)
+#     x = (width - text_width) // 2
+#     y = (height - text_height) // 2
+#     draw = ImageDraw.Draw(image)
+#     draw.text((x, y), text, font=font, fill=text_color)
+#     image.save(output_path)
+#
+#
+# create_image_with_text("Hello, World!")
+
+
+# def generate_qrcode(item_ph):
+#     qr = qrcode.QRCode(version=1, box_size=10, border=5)
+#     image = f'Этот талон показывает что вы приобрели у нас товар {item_ph}, покажите этот qrcode продавцу магазина и он выдаст ваш товар по прибытию товара   '
+#     qr.add_data(image)
+#     qr.make(fit=True)
+#     qr_img = qr.make_image(fill_color="black", back_color="white")
+#     qr_img.save('qrcode.png')
+#
+#
+# generate_qrcode('iphone')
 
 
 def create_table():  # создаем таблицу бд
@@ -52,8 +88,7 @@ def check_name_exists(name):
             return True
 
 
-def check_code_exists(
-        item_code):  # проверяем существование кода товара в базе данных или в каталогах товаров.
+def check_code_exists(item_code):  # проверяем существование кода товара в базе данных или в каталогах товаров.
     with sqlite3.connect('new.db') as conn:
         cursor = conn.cursor()
         cursor.execute('SELECT art FROM items WHERE art = ?', (item_code,))
@@ -179,9 +214,6 @@ def about():
     return render_template('about.html')
 
 
-
-
-
 @app.route('/change', methods=['GET', 'POST'])
 def change():
     with sqlite3.connect(DB_NAME) as conn:
@@ -206,9 +238,9 @@ def delete_details(delete1):
         with sqlite3.connect(DB_NAME) as conn:
             cursor = conn.cursor()
             cursor.execute('SELECT name FROM products WHERE id=?', (delete1,))
-            name1 = cursor.fetchone()  # Use fetchone() to get a single value instead of fetchall()
+            name1 = cursor.fetchone()
             if name1:
-                name1 = name1[0]  # Extract the value from the tuple
+                name1 = name1[0]
                 cursor.execute('DELETE FROM products WHERE id=?', (delete1,))
                 cursor.execute('DELETE FROM users WHERE item = ?', (name1,))
                 conn.commit()
@@ -248,6 +280,34 @@ def admin():
         if name == 'ADMIN' and password == 'TEST123':
             return redirect('/admin/panel')
     return render_template('admin.html')
+
+
+@app.route('/payment', methods=['POST', 'GET'])
+def payment():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        pay = request.form.get('pay')
+
+        if not username or not pay:
+            error_message = 'Please provide a valid username and payment amount.'
+            return render_template('payment.html', error=error_message)
+
+        try:
+            pay = float(pay)
+        except ValueError:
+            error_message = 'Please enter a valid payment amount.'
+            return render_template('payment.html', error=error_message)
+
+        with sqlite3.connect(DB_NAME) as conn:
+            cursor = conn.cursor()
+            cursor.execute("UPDATE users SET must_pay = ? WHERE name = ?",
+                           (datetime.datetime.now() + datetime.timedelta(days=10), username))
+            conn.commit()
+
+        success_message = f'Payment of {pay} RUB successfully processed.'
+        return render_template('payment.html', success=success_message)
+
+    return render_template('payment.html')
 
 
 @app.route('/admin/panel', methods=['GET', 'POST'])
@@ -314,33 +374,6 @@ def product_details(product_id):
                 send_message(phone, send)
 
     return render_template('product_details.html', products=products)
-
-
-@app.route('/payment', methods=['POST', 'GET'])
-def payment():
-    if request.method == 'POST':
-        username = request.form.get('username')
-        pay = request.form.get('pay')
-
-        if not username or not pay:
-            error_message = 'Please provide a valid username and payment amount.'
-            return render_template('payment.html', error=error_message)
-
-        try:
-            pay = float(pay)
-        except ValueError:
-            error_message = 'Please enter a valid payment amount.'
-            return render_template('payment.html', error=error_message)
-
-        with sqlite3.connect(DB_NAME) as conn:
-            cursor = conn.cursor()
-            cursor.execute("UPDATE users SET must_pay = NULL WHERE name = ?", (username,))
-            conn.commit()
-
-        success_message = f'Payment of {pay} RUB successfully processed.'
-        return render_template('payment.html', success=success_message)
-
-    return render_template('payment.html')
 
 
 @app.route('/get_must_pay')
