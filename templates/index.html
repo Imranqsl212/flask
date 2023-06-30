@@ -6,19 +6,80 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='index.css') }}">
 </head>
 <body>
-<div class="container">
-    <h1>Welcome to Shop</h1>
-    <a href="{{ url_for('buy') }}" class="btn">Buy</a>
-    <br>
-    <a href="{{ url_for('payment') }}" class="btn">PAY</a>
-    <br>
-    <a href="{{ url_for('review') }}" class="btn">Review</a>
-    <br>
-    <a href="{{ url_for('about') }}" class="btn">About us</a>
-    <br>
-    <a href="{{ url_for('admin') }}" class="btn">For ADMINS</a>
-    <br>
-    <a href="{{ url_for('more') }}" class="btn">MORE ITEMS ====>>></a>
-</div>
+<!--    <a href="{{ url_for('payment') }}" class="btn">PAY</a>-->
+
+<header class="header">
+    <div class="container">
+        <div class="header__menu">
+            <div class="header__logo">
+                <a href="./index.html"><img style="width:70px;height:80px;
+" src="{{ url_for('static', filename='header_imgs/logo1.png') }}" alt="" class="logo"></a>
+            </div>
+            <nav class="nav">
+                <a href="{{ url_for('buy') }}" class="header__nav ">ПРИОБРЕСТИ ТОВАР</a>
+                <a href="{{ url_for('about') }}" class="header__nav">О НАС</a>
+                <a href="{{ url_for('review') }}" class="header__nav">ОСТАВИТЬ ОТЗЫВ</a>
+            </nav>
+            <div class="header__phones">
+                <div class="header__ma">
+                    <div class="header__phim"></div>
+                    <div class="header__number">
+                        +996-550-578-150
+                    </div>
+                </div>
+                <div class="header__phonetext">
+                    Свяжитесь с нами для <br>
+                    бронирования
+                </div>
+            </div>
+            <div class="header__mainbtn">
+                <a href="{{ url_for('review') }}" class="header__btn">
+                    ОПЛАТИТЬ ТОВАР
+                </a>
+            </div>
+        </div>
+    </div>
+</header>
+<section id="w" class="sec0">
+    <div class="container19">
+        <div class="new">
+            <h2 class="a">Добро Пожаловать В</h2>
+            <h1 class="b">Наш МАГАЗИН</h1>
+            <h3 class="c">SHOPIFY</h3>
+            <br>
+            <button class="btn100"><a href="{{ url_for('more') }}" class="header__nav">ПРОСМОТРЕТЬ ТОВАРЫ</a></button>
+        </div>
+    </div>
+</section>
+<section id="onas" class="section1">
+    <div class="df">
+        <div class=" b">
+            <br>
+            <img src="{{ url_for('static', filename='header_imgs/shopping-cart.png') }}" alt="">
+            <br>
+            <h2 class="magic">Богатый <span>ассортимент</span></h2>
+            <br>
+            <h5 class="d">Мы предлагаем широкий выбор товаров, от одежды и аксессуаров до электроники и косметики</h5>
+        </div>
+        <div class=" b">
+            <br>
+            <img src="{{ url_for('static', filename='header_imgs/shopping-cart.png') }}" alt="">
+            <br>
+            <h2 class="magic">Высокое качество <span>Товара</span></h2>
+            <br>
+            <h5 class="d">Мы гарантируем высокое качество товара, сотрудничая с проверенными поставщиками
+                , чтобы клиенты получали только лучшее.</h5>
+        </div>
+        <div class=" b">
+            <br>
+            <img src="{{ url_for('static', filename='header_imgs/shopping-cart.png') }}" alt="">
+            <br>
+            <h2 class="magic">Быстрая <span>доставка</span></h2>
+            <br>
+            <h5 class="d">Мы ценим время наших клиентов и предлагаем оперативную доставку, чтобы заказанные товары
+                прибывали точно в срок</h5>
+        </div>
+    </div>
+</section>
 </body>
 </html>
