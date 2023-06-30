@@ -301,7 +301,7 @@ def payment():
         with sqlite3.connect(DB_NAME) as conn:
             cursor = conn.cursor()
             cursor.execute("UPDATE users SET must_pay = ? WHERE name = ?",
-                           (datetime.datetime.now() + datetime.timedelta(days=10), username))
+                           (0, username))
             conn.commit()
 
         success_message = f'Payment of {pay} RUB successfully processed.'
