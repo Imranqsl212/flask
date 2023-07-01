@@ -3,7 +3,7 @@ catalog_car = [
         'name1': 'GMC Canyon AT4X AEV Edition',
         'desc': 'white color',
         'photo1': 'https://www.ccarprice.com/products/thumb/GMC_Canyon_AT4X_AEV_Edition.jpg',
-        'price': '54,500',
+        'price': '54500',
         'type': 'Car',
         'art': 191467
     },
@@ -11,7 +11,7 @@ catalog_car = [
         'name1': 'Mini JCW',
         'desc': 'Black color',
         'photo1': 'https://www.ccarprice.com/products/thumb/Mini_JCW_Special_Edition.jpg',
-        'price': '36,999',
+        'price': '36999',
         'type': 'Car',
         'art': 341481
     },
@@ -19,7 +19,7 @@ catalog_car = [
         'name1': 'Bugatti Centodieci 2022',
         'desc': '400km/h',
         'photo1': 'https://www.ccarprice.com/products/thumb/Bugatti_Centodieci_2022_1.jpg',
-        'price': '10,000,000',
+        'price': '10000000',
         'type': 'Car',
         'art': 665437
     }

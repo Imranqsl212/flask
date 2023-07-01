@@ -1,9 +1,11 @@
-def find_it(seq):
-    for i in seq:
-        if seq.count(i)//2==0:
-            return i
+import random
 
+def shuffle_names(some_name):
+    rand = some_name.copy()
+    random.shuffle(rand)
+    return rand
 
+names = ["Imran", "Shah", "Denis", "Deniza"]
 
-print(find_it([1,2,3,4,5,1,2,3,4]))
+print(shuffle_names(names))
 
